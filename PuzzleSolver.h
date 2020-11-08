@@ -14,22 +14,23 @@ public:
 	PuzzleSolver(int**, int, int);
 	~PuzzleSolver();
 	void setTargetZeroSquare(int);
-	pair<int, int> getInitStateCoords(int**);
+	pair<int, int> getInitStateCoords(vector<vector<int>>);
 	bool isSolvable();
 	void solve(); 
-	int search(Board*, int, int, vector<Board*>);
+	int search(Board, int, int, vector<pair<Board, string>>);
 private:
 
 	static const int VISITED = -1;
 	static const int FOUND = -2;
 
-	Board* initState;
-	Board* goalState;
-	vector<Board*> visited;
+	Board initState;
+	Board goalState;
+	vector<Board> visited;
 	bool found; // goal state is reached
 	int n; // board size
 	int iTargetZero; // blank square target position i
 	int jTargetZero; // blank square target position j
 	void setGoalState();
+	vector<vector<int>> matrixToVector(int**);
 };
 

@@ -9,27 +9,29 @@ using namespace std;
 class Board
 {
 public:
-	Board(int**, int, int iZero = -1, int jZero = -1);
+	Board(vector<vector<int>>, int, int iZero = -1, int jZero = -1);
 	Board(const Board&);
+	Board();
 	~Board();
+	//void cleanUp();
 	int heuristic();
 	int manhattanDistance(int, int);
-	Board* swipeLeft();
-	Board* swipeRight();
-	Board* swipeUp();
-	Board* swipeDown();
-	vector<Board*> neighbours();
+	pair<Board, string> swipeLeft();
+	pair<Board, string> swipeRight();
+	pair<Board, string> swipeUp();
+	pair<Board, string> swipeDown();
+	vector<pair<Board, string>> neighbours();
 	bool canSwipeLeft() const;
 	bool canSwipeRight() const;
 	bool canSwipeUp() const;
 	bool canSwipeDown() const;
 	void print();	
-	int** copyTiles();
-	bool isEqualTo(Board*);
+	vector<vector<int>> copyTiles();
+	bool isEqualTo(Board);
 	int inversionsCount() const;
 
 	int n;
-	int** tiles; 
+	vector<vector<int>> tiles; 
 private:
 	
 	int iZero;

@@ -1,7 +1,7 @@
 #include "Board.h"
 
 
-Board::Board(int** tiles, int n, int iZero, int jZero)
+Board::Board(vector<vector<int>> tiles, int n, int iZero, int jZero)
 {
 	this->tiles = tiles;
 	this->n = n;
@@ -15,14 +15,31 @@ Board::Board(int** tiles, int n, int iZero, int jZero)
 	}
 }
 
+Board::Board(const Board& other)
+{
+	this->tiles = other.tiles;
+	this->n = other.n;
+
+	if (other.iZero == -1 || other.jZero == -1) {
+		this->setZero();
+	}
+	else {
+		this->iZero = other.iZero;
+		this->jZero = other.jZero;
+	}
+}
+
+Board::Board()
+{
+	this->iZero = 0;
+	this->jZero = 0;
+	this->n = 0;
+	vector<vector<int>> v;
+	this->tiles = v;
+}
+
 Board::~Board()
 {
-	for (int i = 0; i < this->n; i++)
-	{
-		delete[] this->tiles[i];
-	}
-
-	delete[] this->tiles;
 }
 
 int Board::heuristic()
@@ -53,61 +70,69 @@ int Board::manhattanDistance(int i, int j)
 }
 
 
-Board* Board::swipeLeft()
+pair<Board, string> Board::swipeLeft()
 {
 	if (!this->canSwipeLeft()) {
 		throw exception("Can't swipe left");
 	}
 
-	int** newTiles = this->copyTiles();
+	vector<vector<int>> newTiles = this->copyTiles();
 	newTiles[iZero][jZero] = newTiles[iZero][jZero + 1];
 	newTiles[iZero][jZero + 1] = 0;
 
-	return new Board(newTiles, this->n);
+	Board b(newTiles, this->n);
+	pair<Board, string> pr(b, "left");
+	return pr;
 }
 
-Board* Board::swipeRight()
+pair<Board, string> Board::swipeRight()
 {
 	if (!this->canSwipeRight()) {
 		throw exception("Can't swipe right");
 	}
 
-	int** newTiles = this->copyTiles();
+	vector<vector<int>> newTiles = this->copyTiles();
 	newTiles[iZero][jZero] = newTiles[iZero][jZero - 1];
 	newTiles[iZero][jZero - 1] = 0;
 
-	return new Board(newTiles, this->n);
+	Board b(newTiles, this->n);
+	pair<Board, string> pr(b, "right");
+	return pr;
 }
 
-Board* Board::swipeUp()
+pair<Board, string> Board::swipeUp()
 {
 	if (!this->canSwipeUp()) {
 		throw exception("Can't swipe up");
 	}
 
-	int** newTiles = this->copyTiles();
+	vector<vector<int>> newTiles = this->copyTiles();
 	newTiles[iZero][jZero] = newTiles[iZero + 1][jZero];
 	newTiles[iZero + 1][jZero] = 0;
 
-	return new Board(newTiles, this->n);
+	Board b(newTiles, this->n);
+	pair<Board, string> pr(b, "up");
+	return pr;
 }
 
-Board* Board::swipeDown()
+pair<Board, string> Board::swipeDown()
 {
 	if (!this->canSwipeDown()) {
 		throw exception("Can't swipe down");
 	}
 
-	int** newTiles = this->copyTiles();
+	vector<vector<int>> newTiles = this->copyTiles();
 	newTiles[iZero][jZero] = newTiles[iZero - 1][jZero];
 	newTiles[iZero - 1][jZero] = 0;
 
-	return new Board(newTiles, this->n);
+	Board b(newTiles, this->n);
+	pair<Board, string> pr(b, "down");
+	return pr;
 }
 
-vector<Board*> Board::neighbours()
+vector<pair<Board, string>> Board::neighbours()
 {
-	vector<Board*> neighbours;
+	vector<pair<Board, string>> neighbours;
 
 	if (this->canSwipeLeft()) {
 		neighbours.push_back(this->swipeLeft());
@@ -179,29 +204,20 @@ void Board::setZero()
 	throw exception("This board does not contain zero");
 }
 
-int** Board::copyTiles()
+vector<vector<int>> Board::copyTiles()
 {
-	int** newTiles = new int* [this->n];
-
-	for (int i = 0; i < this->n; i++)
-	{
-		newTiles[i] = new int[this->n];
-		for (int j = 0; j < this->n; j++)
-		{
-			newTiles[i][j] = this->tiles[i][j];
-		}
-	}
+	vector<vector<int>> newTiles = tiles;
 
 	return newTiles;
 }
 
-bool Board::isEqualTo(Board* other)
+bool Board::isEqualTo(Board other)
 {
 	for (int i = 0; i < this->n; i++)
 	{
 		for (int j = 0; j < this->n; j++)
 		{
-			if (this->tiles[i][j] != other->tiles[i][j]) {
+			if (this->tiles[i][j] != other.tiles[i][j]) {
 				return false;
 			}
 		}
